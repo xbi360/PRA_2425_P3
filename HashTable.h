@@ -5,8 +5,9 @@
 #include <stdexcept>
 #include "Dict.h"
 #include "TableEntry.h"
+#include "../../P1/PRA_2425_P1/Node.h" 
 
-#include "../../P1/PRA_2425_P1/ListLinked.h"  // ¡¡¡¡MODIFICAR!!!!
+#include "../../P1/PRA_2425_P1/ListLinked.h"  
 
 template <typename V>
 class HashTable: public Dict<V> {
@@ -59,10 +60,10 @@ class HashTable: public Dict<V> {
 
 		V operator[](std::string key) {
         		int index = h(key); //obtener el índice
-       		 	for (auto it = table[index].begin(); it != table[index].end(); ++it) {
-            			if (it->key == key) {
-                			return it->value;
-            			}
+			auto *nodo=table[index].get_first();
+       		 	while(nodo!=nullptr){
+				if(nodo->data.key==key) return nodo->data.value;
+				nodo=nodo->next;
         		}
         	throw std::runtime_error("Clave no encontrada.");
     		}
@@ -70,40 +71,56 @@ class HashTable: public Dict<V> {
 		  // Implementación del método insert de Dict
     		void insert(std::string key, V value) override {
         		int index = h(key);
-        		TableEntry<V> newEntry(key, value);
+      			auto *nodo=table[index].get_first();
+			while(nodo!=nullptr){
+				if(nodo->data.key==key){
+					nodo->data.value; //si la key ya existe, se actualiza
+				
+			}
+				nodo=nodo->next;
+			
+    			}
+			//inserta al frente de la lista.
+			table[index].prepend(TableEntry<V>(key, value));
+			n++;
 
-        	// Verificar si la clave ya existe
-        		for (auto it = table[index].begin(); it != table[index].end(); ++it) {
-            			if (it->key == key) {
-                		it->value = value; // Actualizar el valor si la clave ya existe
-                		return;
-            			}
-        		}
-
-        		table[index].prepend(newEntry);
-        		++n;
-    		}
+		}
 
     		V search(std::string key) override {
         		int index = h(key);
-        		for (auto it = table[index].begin(); it != table[index].end(); ++it) {
-            			if (it->key == key) {
-                			return it->value;
-            			}
-        		}
-        		throw std::runtime_error("Clave no encontrada.");
-    		}
+        		auto *current = table[index].get_first();
+			
+			while(current !=nullptr){
+				if(current->data.key==key){
+					return current->data.value;
+				}
+				current=current->next;
+			
+    			}
+				throw std::runtime_error("Clave no encuentrada.");
+		}
+
 
     		V remove(std::string key) override {
         		int index = h(key);
-       			for (auto it = table[index].begin(); it != table[index].end(); ++it) {
-            			if (it->key == key) {
-               			V value = it->value;
-               			table[index].erase(it);
-                		--n;
-                		return value;
-            			}
-        		}
+			auto *current=table[index].get_first();
+			Node <TableEntry<V>>*prev=nullptr;
+			while(current !=nullptr){
+				if(current->data.key==key){
+					V value=current->data.value;
+				if(prev==nullptr){
+					table[index].remove_first();
+				}else{
+					prev->next=current->next;
+					delete current;
+				}
+				n--;
+				return value;
+				}
+			prev=current;
+			current=current->next;
+			}
+
         		throw std::runtime_error("Clave no encontrada.");
     		}	
 
