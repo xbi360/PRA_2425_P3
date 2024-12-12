@@ -21,8 +21,8 @@ class HashTable: public Dict<V> {
 		int h(std::string key){
 			int sum=0;
 			for(char c:key){
-				int num=(char)c;
-				sum+=num;
+				sum += static_cast<int>(c);
+				
 			}
 			return sum%max;
 		}
@@ -74,9 +74,9 @@ class HashTable: public Dict<V> {
       			auto *nodo=table[index].get_first();
 			while(nodo!=nullptr){
 				if(nodo->data.key==key){
-					nodo->data.value; //si la key ya existe, se actualiza
+					nodo->data.value = value; //si la key ya existe, se actualiza
 				
-			}
+				}
 				nodo=nodo->next;
 			
     			}
@@ -97,7 +97,7 @@ class HashTable: public Dict<V> {
 				current=current->next;
 			
     			}
-				throw std::runtime_error("Clave no encuentrada.");
+			throw std::runtime_error("Clave no encuentrada.");
 		}
 
 
